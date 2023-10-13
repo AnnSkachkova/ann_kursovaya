@@ -21,3 +21,7 @@ class Logout(LogoutView):
 class HomePage(TemplateView):
     template_name = 'index.html'
     
+
+class ProductPage(TemplateView):
+    template_name = 'products.html'
+    
