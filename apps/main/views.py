@@ -1,5 +1,6 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render
 from django.contrib.auth.views import LoginView
+from django.contrib.auth.decorators import login_required
 from . import models
 
 
@@ -12,6 +13,6 @@ class Login(LoginView):
         models.Token.objects.update_or_create(user=user, defaults={'token': token})
         return super(Login, self).get_success_url()
 
-
+@login_required(login_url='login')
 def index(request):
-    return HttpResponse("ghbsdfsdfsdf")
+    return render(request, 'index.html', context={})
