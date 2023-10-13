@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.views import LoginView
-from django.contrib.auth.decorators import login_required
+from django.views.generic import TemplateView
 from . import models
 
 
@@ -13,6 +13,7 @@ class Login(LoginView):
         models.Token.objects.update_or_create(user=user, defaults={'token': token})
         return super(Login, self).get_success_url()
 
-@login_required(login_url='login')
-def index(request):
-    return render(request, 'index.html', context={})
+
+class HomePage(TemplateView):
+    template_name = 'index.html'
+    
