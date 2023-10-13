@@ -1,3 +1,9 @@
 from django.contrib import admin
+from . import models
 
-# Register your models here.
+
+@admin.register(models.Token)
+class TokenAdmin(admin.ModelAdmin):
+    list_display = ['token', 'user']
+    list_display_links = ['token', 'user']
+    
