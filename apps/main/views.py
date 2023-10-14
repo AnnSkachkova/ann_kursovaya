@@ -56,4 +56,21 @@ def products_to_xls(request):
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         filename='product.xlsx'
     )
-    
+
+
+def contractors_to_xls(request):
+    column_descriptions = [
+        {'machine_name': 'id', 'display_name': 'Номер'},
+        {'machine_name': 'title', 'display_name': 'Наименование', 'width': 80},
+        {'machine_name': 'category', 'display_name': 'Категория', 'width': 30,
+         'subs': dict(models.Contractor.CONTRACTOR_CATEGORY)},
+        {'machine_name': 'dt_created', 'display_name': 'Дата создания', 'width': 30},
+        {'machine_name': 'dt_updated', 'display_name': 'Дата изменения', 'width': 30},
+    ]
+    xls_data = model_to_xls(models.Contractor, column_descriptions)
+
+    return FileResponse(
+        xls_data,
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        filename='products.xlsx'
+    )
