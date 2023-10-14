@@ -101,3 +101,16 @@ class Document(BaseDateModel):
         verbose_name = 'Документ'
         verbose_name_plural = 'Документы'
         ordering = ['-dt_created']
+        
+
+class DocumentItem(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE, verbose_name='Документ')
+    product = models.ForeignKey(Product, on_delete=models.PROTECT, verbose_name='Товар')
+    count = models.IntegerField(verbose_name='Количество')
+
+    def __str__(self):
+        return f'{self.product.title}. Количество {self.count}'
+
+    class Meta:
+        verbose_name = 'Товар в документе'
+        verbose_name_plural = 'Товары в документе'
