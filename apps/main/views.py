@@ -38,7 +38,11 @@ class OperationPage(TemplateView):
 
 class StorageItemPage(TemplateView):
     template_name = 'storage_items.html'
-    
+
+
+class RemoveMarkedObjects(TemplateView):
+    template_name = 'remove_marked_objects.html'
+
 
 def products_to_xls(request):
     column_descriptions = [
