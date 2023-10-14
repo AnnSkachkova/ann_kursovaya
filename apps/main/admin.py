@@ -29,3 +29,9 @@ class OperationAdmin(admin.ModelAdmin):
 class StorageItemAdmin(admin.ModelAdmin):
     list_display = ['id', 'product', 'count', 'dt_created', 'dt_updated', 'to_remove']
     list_display_links = ['product']
+    
+
+@admin.register(models.Document)
+class DocumentAdmin(admin.ModelAdmin):
+    list_display = ['id', 'destination_type', 'apply_flag', 'contractor', 'dt_created', 'dt_updated', 'to_remove']
+    list_display_links = ['destination_type', 'contractor']

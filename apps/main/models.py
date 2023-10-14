@@ -79,3 +79,25 @@ class StorageItem(BaseDateModel):
     class Meta:
         verbose_name = 'Товар на складе'
         verbose_name_plural = 'Товары на складе'
+        
+
+class Document(BaseDateModel):
+    RECEIPT = 'receipt'
+    EXPENSE = 'expense'
+
+    DESTINATION_TYPES = (
+        (RECEIPT, 'Приход'),
+        (EXPENSE, 'Расход')
+    )
+
+    destination_type = models.CharField(max_length=7, choices=DESTINATION_TYPES, verbose_name='Тип документа')
+    contractor = models.ForeignKey(Contractor, on_delete=models.PROTECT, verbose_name='Контрагент')
+    apply_flag = models.BooleanField(verbose_name='Документ проведен', default=False)
+
+    def __str__(self):
+        return f'{self.pk} от: {str(self.dt_created)[:19]}'
+
+    class Meta:
+        verbose_name = 'Документ'
+        verbose_name_plural = 'Документы'
+        ordering = ['-dt_created']
