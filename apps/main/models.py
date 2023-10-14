@@ -67,3 +67,15 @@ class Operation(models.Model):
         verbose_name = 'Операция'
         verbose_name_plural = 'Операции'
         ordering = ['-dt_created']
+        
+        
+class StorageItem(BaseDateModel):
+    product = models.OneToOneField(Product, on_delete=models.PROTECT, verbose_name='Товар')
+    count = models.IntegerField(verbose_name='Количество')
+
+    def __str__(self):
+        return f'{str(self.product)} ({self.count})'
+
+    class Meta:
+        verbose_name = 'Товар на складе'
+        verbose_name_plural = 'Товары на складе'
