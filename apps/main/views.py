@@ -44,6 +44,10 @@ class RemoveMarkedObjects(TemplateView):
     template_name = 'remove_marked_objects.html'
 
 
+class ImportProduct(TemplateView):
+    template_name = 'import_products.html'
+    
+
 def products_to_xls(request):
     column_descriptions = [
         {'machine_name': 'id', 'display_name': 'Номер'},
