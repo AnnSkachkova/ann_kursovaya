@@ -23,3 +23,9 @@ class ContractorAdmin(admin.ModelAdmin):
 @admin.register(models.Operation)
 class OperationAdmin(admin.ModelAdmin):
     list_display = ['username', 'operation', 'dt_created']
+
+
+@admin.register(models.StorageItem)
+class StorageItemAdmin(admin.ModelAdmin):
+    list_display = ['id', 'product', 'count', 'dt_created', 'dt_updated', 'to_remove']
+    list_display_links = ['product']
