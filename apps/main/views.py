@@ -32,3 +32,7 @@ class ContractorPage(TemplateView):
 
 class OperationPage(TemplateView):
     template_name = 'operations.html'
+    
+
+class StorageItemPage(TemplateView):
+    template_name = 'storage_items.html'
