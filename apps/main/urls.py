@@ -13,6 +13,7 @@ urlpatterns = [
     path('remove_marked_objects/', login_required(views.RemoveMarkedObjects.as_view()), name='remove_marked_objects'),
     path('import_products/', login_required(views.ImportProduct.as_view()), name='import_products'),
     path('consolidated_report/', login_required(views.ConsolidatedReport.as_view()), name='consolidated_report'),
+    path('motion_report/', login_required(views.MotionReport.as_view()), name='motion_report'),
     path('products_to_xls/', login_required(views.products_to_xls), name='products_to_xls'),
     path('contractors_to_xls/', login_required(views.contractors_to_xls), name='contractors_to_xls'),
     

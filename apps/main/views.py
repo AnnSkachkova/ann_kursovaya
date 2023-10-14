@@ -51,6 +51,15 @@ class ImportProduct(TemplateView):
 class ConsolidatedReport(TemplateView):
     template_name = 'consolidated_report.html'
     
+    
+class MotionReport(TemplateView):
+    template_name = 'motion_report.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super(MotionReport, self).get_context_data(**kwargs)
+        context["report_type"] = self.request.GET['report_type']
+        return context
+
 
 def products_to_xls(request):
     column_descriptions = [
