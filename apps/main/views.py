@@ -2,6 +2,8 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.views.generic import TemplateView, View
 from django.urls import reverse_lazy
 from . import models
+from django.http.response import FileResponse
+from utils import model_to_xls
 
 
 class Login(LoginView):
@@ -38,13 +40,20 @@ class StorageItemPage(TemplateView):
     template_name = 'storage_items.html'
     
 
-# class ProductToXls(View):
-#     column_descriptions = [
-#         {'machine_name': 'id', 'display_name': 'Номер'},
-#         {'machine_name': 'title', 'display_name': 'Наименование', 'width': 80},
-#         {'machine_name': 'description', 'display_name': 'Описание', 'width': 30},
-#         {'machine_name': 'price', 'display_name': 'Цена'},
-#         {'machine_name': 'dt_created', 'display_name': 'Дата создания', 'width': 30},
-#         {'machine_name': 'dt_updated', 'display_name': 'Дата изменения', 'width': 30},
-#     ]
-#     xls_data = model_to_xls(Product, column_descriptions)
+def products_to_xls(request):
+    column_descriptions = [
+        {'machine_name': 'id', 'display_name': 'Номер'},
+        {'machine_name': 'title', 'display_name': 'Наименование', 'width': 80},
+        {'machine_name': 'description', 'display_name': 'Описание', 'width': 30},
+        {'machine_name': 'price', 'display_name': 'Цена'},
+        {'machine_name': 'dt_created', 'display_name': 'Дата создания', 'width': 30},
+        {'machine_name': 'dt_updated', 'display_name': 'Дата изменения', 'width': 30},
+    ]
+    xls_data = model_to_xls(models.Product, column_descriptions)
+
+    return FileResponse(
+        xls_data,
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        filename='product.xlsx'
+    )
+    
