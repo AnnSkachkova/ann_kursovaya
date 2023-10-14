@@ -35,3 +35,26 @@ class Product(BaseDateModel):
         verbose_name = 'Товар'
         verbose_name_plural = 'Товары'
         ordering = ['title']
+        
+
+class Contractor(BaseDateModel):
+    INDIVIDUAL = 'individual'
+    ENTITY = 'entity'
+
+    CONTRACTOR_CATEGORY = (
+        (INDIVIDUAL, 'Физическое лицо'),
+        (ENTITY, 'Юридическое лицо')
+    )
+    
+    title = models.CharField(max_length=200, verbose_name='Наименование')
+    category = models.CharField(max_length=20, choices=CONTRACTOR_CATEGORY, verbose_name='Категория')
+    
+    def __str__(self) -> str:
+        return '{number:<10}|{title}'.format(number=self.pk, title=self.title)
+    
+    class Meta:
+        verbose_name = 'Контрагент'
+        verbose_name_plural = 'Контрагенты'
+        ordering = ['title']
+        
+    
