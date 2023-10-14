@@ -18,3 +18,8 @@ class ProductAdmin(admin.ModelAdmin):
 class ContractorAdmin(admin.ModelAdmin):
     list_display = ['id', 'title', 'category', 'dt_created', 'dt_updated', 'to_remove']
     list_display_links = ['title']
+    
+
+@admin.register(models.Operation)
+class OperationAdmin(admin.ModelAdmin):
+    list_display = ['username', 'operation', 'dt_created']
