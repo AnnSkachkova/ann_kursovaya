@@ -28,3 +28,7 @@ class ProductPage(TemplateView):
 
 class ContractorPage(TemplateView):
     template_name = 'contractors.html'
+    
+
+class OperationPage(TemplateView):
+    template_name = 'operations.html'
