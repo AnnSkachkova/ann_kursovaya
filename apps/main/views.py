@@ -48,6 +48,10 @@ class ImportProduct(TemplateView):
     template_name = 'import_products.html'
     
 
+class ConsolidatedReport(TemplateView):
+    template_name = 'consolidated_report.html'
+    
+
 def products_to_xls(request):
     column_descriptions = [
         {'machine_name': 'id', 'display_name': 'Номер'},
