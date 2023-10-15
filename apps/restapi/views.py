@@ -129,3 +129,50 @@ class StorageItemViewSet(RegisteredViewSet):
             else:
                 queryset = queryset.order_by(order)
         return queryset
+    
+
+class DocumentViewSet(RegisteredViewSet):
+    serializer_class = serializers.DocumentSerializer
+    pagination_class = CustomPagination
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    model = models.Document
+    model_verbose_name = 'Документ'
+
+    def get_queryset(self):
+        queryset = models.Document.objects.all()
+
+        # Обрабатываем параметры сортировки
+        order = self.request.query_params.get('order')
+        if order:
+            if order.endswith('contractor_title'):
+                prefix = '-' if order.startswith('-') else ''
+                queryset = queryset.order_by(f'{prefix}contractor__title')
+            else:
+                queryset = queryset.order_by(order)
+
+        # Обрабатываем параметры поиска
+        number = self.request.query_params.get('number')
+        if number:
+            queryset = queryset.filter(pk=number)
+        dt_start = self.request.query_params.get('dt_start')
+        if dt_start:
+            queryset = queryset.filter(dt_created__gte=dt_start)
+        dt_end = self.request.query_params.get('dt_end')
+        if dt_end:
+            dt_end += " 23:59:59"
+            queryset = queryset.filter(dt_created__lte=dt_end)
+        contractor = self.request.query_params.get('contractor')
+        if contractor:
+            queryset = queryset.filter(contractor=contractor)
+        destination_type = self.request.query_params.get('destination_type')
+        if destination_type:
+            queryset = queryset.filter(destination_type=destination_type)
+        apply_flag = self.request.query_params.get('apply_flag')
+        if apply_flag:
+            apply_flag = apply_flag.lower()
+            apply_flag = {'true': True, 'false': False}[apply_flag]
+            queryset = queryset.filter(apply_flag=apply_flag)
+
+        return queryset

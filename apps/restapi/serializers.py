@@ -34,3 +34,14 @@ class StorageItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.StorageItem
         fields = '__all__'
+        
+
+class DocumentSerializer(serializers.ModelSerializer):
+    def to_representation(self, instance):
+        result = serializers.ModelSerializer.to_representation(self, instance)
+        result['contractor_title'] = instance.contractor.title
+        return result
+
+    class Meta:
+        model = models.Document
+        fields = '__all__'
