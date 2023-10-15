@@ -1,4 +1,4 @@
-import utils
+import utils, os
 from django.shortcuts import render
 from rest_framework import viewsets
 from django.db.models.query_utils import DeferredAttribute
@@ -12,6 +12,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models.deletion import ProtectedError
+from apps.main.management.commands.load_test_products import action
 
 
 class RegisteredViewSet(viewsets.ModelViewSet):
@@ -341,3 +342,26 @@ def remove_marked_objects(request):
             )
 
     return Response(data=result, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def import_products(request):
+    uploaded_file = request.data['uploaded_file']
+    path = utils.get_tmp_file_path('uploaded_file.xlsx')
+    with open(path, 'wb') as output_file:
+        output_file.write(uploaded_file.read())
+
+    try:
+        created_records = action(file_path=path)
+        models.Operation.objects.create(
+            username=utils.get_username_for_operation(request.user),
+            operation=f'Импортировано товаров: {created_records}'
+        )
+    except Exception as ex:
+        return Response(data=f'Ошибка при импорте: {ex}', status=status.HTTP_400_BAD_REQUEST)
+    finally:
+        os.remove(path)
+
+    return Response(status=status.HTTP_200_OK)
