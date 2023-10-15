@@ -10,6 +10,7 @@ urlpatterns = [
     path('contractor_categories/', views.contractor_categories, name='contractor_categories'),
     path('apply_document/<int:document_id>/', views.apply_document, name='apply_document'),
     path('unapply_document/<int:document_id>/', views.unapply_document, name='unapply_document'),
+    path('remove_marked_objects/', views.remove_marked_objects, name='remove_marked_objects'),
 ]
 
 
