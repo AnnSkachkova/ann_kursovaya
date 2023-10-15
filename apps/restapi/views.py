@@ -1,5 +1,4 @@
-import utils, os
-from django.shortcuts import render
+import utils, os, math
 from rest_framework import viewsets
 from django.db.models.query_utils import DeferredAttribute
 from apps.main import models
@@ -388,3 +387,163 @@ def consolidated_report(request):
         'total_cost': total_cost
     }
     return Response(data=data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def motion_report(request):
+    report_type = request.query_params['report_type']
+    documents = models.Document.objects.prefetch_related('documentitem_set').filter(apply_flag=True)
+
+    # Отбираем документы в зависимости от фильтра дат
+    dt_start = request.query_params.get('dt_start')
+    if dt_start:
+        documents = documents.filter(dt_updated__gte=dt_start)
+    dt_end = request.query_params.get('dt_end')
+    if dt_end:
+        dt_end += ' 23:59:59'
+        documents = documents.filter(dt_updated__lte=dt_end)
+
+    # Отбираем документы в зависимости от фильтра контрагентов
+    contractor = request.query_params.get('contractor')
+    if contractor:
+        documents = documents.filter(contractor_id=contractor)
+
+    # Реализуем поиск товаров в документах в зависимости от типа запрошенного отчета
+    document_items = models.DocumentItem.objects.filter(document__in=documents)
+    search_param = request.query_params.get('search')
+    if search_param and report_type == 'products':
+        if search_param.isdigit():
+            document_items = document_items.filter(
+                Q(product_id=search_param) | Q(product__title__icontains=search_param)
+            )
+        else:
+            document_items = document_items.filter(product__title__icontains=search_param)
+    if search_param and report_type == 'contractors':
+        if search_param.isdigit():
+            document_items = document_items.filter(
+                Q(document__contractor_id=search_param) | Q(document__contractor__title__icontains=search_param)
+            )
+        else:
+            document_items = document_items.filter(document__contractor__title__icontains=search_param)
+
+    # Реализуем фильтрацию по товарам
+    product = request.query_params.get('product')
+    if product:
+        document_items = document_items.filter(product_id=product)
+
+    receipt_items = document_items.filter(document__destination_type=models.Document.RECEIPT)
+    expense_items = document_items.filter(document__destination_type=models.Document.EXPENSE)
+
+    # Формируем итоги в зависимости от типа отчета
+    id_field, title_field = {
+        'products': ('product_id', 'product__title'),
+        'contractors': ('document__contractor_id', 'document__contractor__title')
+    }[report_type]
+    receipt_items = receipt_items.values(
+        id_field,
+        title_field,
+    ).order_by(
+        id_field
+    ).annotate(
+        total_count=Sum('count'),
+        total_sum=Sum(F('count') * F('product__price'))
+    )
+    expense_items = expense_items.values(
+        id_field,
+        title_field,
+    ).order_by(
+        id_field
+    ).annotate(
+        total_count=Sum('count'),
+        total_sum=Sum(F('count') * F('product__price'))
+    )
+
+    receipt_ids = [e[id_field] for e in receipt_items]
+    expense_ids = [e[id_field] for e in expense_items]
+    ids_list = set(receipt_ids + expense_ids)
+
+    result_data = []
+    total_receipt_count = total_receipt_sum = total_expense_count = total_expense_sum = 0
+    for id_element in ids_list:
+        title = None
+        receipt_count = receipt_sum = expense_count = expense_sum = 0
+
+        # Ищем товар с текущим идентификатором в списке приходных записей
+        for item in receipt_items:
+            if item[id_field] == id_element:
+                receipt_count = item['total_count']
+                receipt_sum = item['total_sum']
+                if not title:
+                    title = item[title_field]
+                break
+
+        # Ищем товар с текущим идентификатором в списке расходных записей
+        for item in expense_items:
+            if item[id_field] == id_element:
+                expense_count = item['total_count']
+                expense_sum = item['total_sum']
+                if not title:
+                    title = item[title_field]
+                break
+
+        total_receipt_count += receipt_count
+        total_receipt_sum += receipt_sum
+        total_expense_count += expense_count
+        total_expense_sum += expense_sum
+        result_data.append(
+            {
+                'id': id_element,
+                'title': title,
+                'receipt_count': receipt_count,
+                'receipt_sum': receipt_sum,
+                'expense_count': expense_count,
+                'expense_sum': expense_sum
+            }
+        )
+
+    # Реализуем сортировку
+    reverse = False
+    order = request.query_params.get('order')
+    if order:
+        if order.startswith('-'):
+            reverse = True
+            order = order[1:]
+    else:
+        order = 'title'
+    result_data.sort(key=lambda x: x[order], reverse=reverse)
+
+    # Реализуем пагинацию
+    full_path = request.build_absolute_uri()
+    if full_path[-1] == '/':
+        full_path += '?'
+    else:
+        full_path += '&'
+
+    page_size = CustomPagination.page_size
+    page_count = math.ceil(len(result_data) / page_size)
+
+    page = request.query_params.get('page')
+    if not page:
+        page = 1
+    else:
+        page = int(page)
+
+    begin_index = (page - 1) * page_size
+    end_index = begin_index + page_size
+
+    result_with_paginate = {
+        'count': len(result_data),
+        'next': None if page == page_count else f'{full_path}page={page + 1}',
+        'previous': None if page == 1 else f'{full_path}page={page - 1}',
+        'results': result_data[begin_index:end_index],
+        'totals': {
+            'total_receipt_count': total_receipt_count,
+            'total_receipt_sum': total_receipt_sum,
+            'total_expense_count': total_expense_count,
+            'total_expense_sum': total_expense_sum
+        }
+    }
+
+    return Response(data=result_with_paginate, status=status.HTTP_200_OK)
