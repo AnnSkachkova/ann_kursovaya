@@ -106,3 +106,26 @@ class OperationViesSet(viewsets.ModelViewSet):
     filter_backends = [SearchFilter]
     search_fields = ['username', 'operation']
     queryset = models.Operation.objects.all()
+    
+
+class StorageItemViewSet(RegisteredViewSet):
+    serializer_class = serializers.StorageItemSerializer
+    pagination_class = CustomPagination
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    filter_backends = [SearchFilter]
+    search_fields = ['product__id', 'product__title']
+
+    model = models.StorageItem
+    model_verbose_name = 'Товар на складе'
+
+    def get_queryset(self):
+        queryset = models.StorageItem.objects.all()
+        order = self.request.query_params.get('order')
+        if order:
+            if order.endswith('product_title'):
+                prefix = '-' if order.startswith('-') else ''
+                queryset = queryset.order_by(f'{prefix}product__title')
+            else:
+                queryset = queryset.order_by(order)
+        return queryset
