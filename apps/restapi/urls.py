@@ -12,6 +12,7 @@ urlpatterns = [
     path('unapply_document/<int:document_id>/', views.unapply_document, name='unapply_document'),
     path('remove_marked_objects/', views.remove_marked_objects, name='remove_marked_objects'),
     path('import_products/', views.import_products, name='import_products'),
+    path('consolidated_report/', views.consolidated_report, name='consolidated_report'),
 ]
 
 

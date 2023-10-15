@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.models.deletion import ProtectedError
 from apps.main.management.commands.load_test_products import action
+from django.db.models import Sum, F, Q
 
 
 class RegisteredViewSet(viewsets.ModelViewSet):
@@ -365,3 +366,25 @@ def import_products(request):
         os.remove(path)
 
     return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def consolidated_report(request):
+    product_count = models.Product.objects.count()
+    contractor_count = models.Contractor.objects.count()
+    storage_item_count = models.StorageItem.objects.count()
+
+    product_count_field = F('count')
+    product_price_field = F('product__price')
+
+    total_cost = models.StorageItem.objects.aggregate(tc=Sum(product_count_field * product_price_field))['tc']
+
+    data = {
+        'product_count': product_count,
+        'contractor_count': contractor_count,
+        'storage_item_count': storage_item_count,
+        'total_cost': total_cost
+    }
+    return Response(data=data, status=status.HTTP_200_OK)
