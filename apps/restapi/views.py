@@ -263,3 +263,38 @@ def apply_document(request, document_id):
         operation=f'Документ {document} проведен'
     )
     return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def unapply_document(request, document_id):
+    document = models.Document.objects.filter(pk=document_id).first()
+    if not document:
+        return Response({'error': f'Документ с номером {document_id} не найден'}, status=status.HTTP_400_BAD_REQUEST)
+    if not document.apply_flag:
+        return Response({'error': f'Документ с номером {document_id} не проведен'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Отменяем проведение приходного документа
+    if document.destination_type == models.Document.RECEIPT:
+        try:
+            utils.unapply_receipt_document(document)
+        except Exception as ex:
+            return Response(
+                {'error': f'Невозможно отменить проведение документа. Недостаточно товара на складе: {ex}'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    # Отменяем проведение расходного документа
+    elif document.destination_type == models.Document.EXPENSE:
+        utils.unapply_expense_document(document)
+
+    # Если ошибок не возникло - помечаем документ как не проведенный и регистрируем операцию
+    document.apply_flag = False
+    document.save()
+    models.Operation.objects.create(
+        username=utils.get_username_for_operation(request.user),
+        operation=f'Отменено проведение документа {document}'
+    )
+    return Response(status=status.HTTP_200_OK)
+
