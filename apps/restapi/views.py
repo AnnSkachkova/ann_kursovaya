@@ -8,6 +8,8 @@ from .pagination import CustomPagination
 from .authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import SearchFilter
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.response import Response
 
 
 class RegisteredViewSet(viewsets.ModelViewSet):
@@ -75,3 +77,22 @@ class ProductViewSet(RegisteredViewSet):
 
     model = models.Product
     model_verbose_name = 'Товар'
+    
+
+class ContractorViewSet(RegisteredViewSet):
+    serializer_class = serializers.ContractorSerializer
+    pagination_class = CustomPagination
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    filter_backends = [SearchFilter]
+    search_fields = ['id', 'title']
+
+    model = models.Contractor
+    model_verbose_name = 'Контрагент'
+    
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def contractor_categories(request):
+    return Response(dict(models.Contractor.CONTRACTOR_CATEGORY))

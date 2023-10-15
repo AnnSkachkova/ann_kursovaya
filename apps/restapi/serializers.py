@@ -8,3 +8,9 @@ class ProductSerializer(serializers.ModelSerializer):
         model = models.Product
         fields = '__all__'
         
+
+class ContractorSerializer(serializers.ModelSerializer):
+    ...
+    class Meta:
+        model = models.Contractor
+        fields = '__all__'

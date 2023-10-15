@@ -7,9 +7,10 @@ app_name = 'api'
 
 
 urlpatterns = [
-    
+    path('contractor_categories/', views.contractor_categories, name='contractor_categories'),
 ]
 
 
-routers = routers.SimpleRouter()
-routers.register('products', views.ProductViewSet, basename='products')
+router = routers.SimpleRouter()
+router.register('products', views.ProductViewSet, basename='products')
+router.register('contractors', views.ContractorViewSet, basename='contractors')
