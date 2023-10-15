@@ -14,3 +14,4 @@ urlpatterns = [
 router = routers.SimpleRouter()
 router.register('products', views.ProductViewSet, basename='products')
 router.register('contractors', views.ContractorViewSet, basename='contractors')
+router.register('operations', views.OperationViesSet, basename='operations')

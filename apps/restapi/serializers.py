@@ -14,3 +14,10 @@ class ContractorSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Contractor
         fields = '__all__'
+        
+
+class OperationSerializer(serializers.ModelSerializer):
+    ...
+    class Meta:
+        model = models.Operation
+        fields = ['username', 'operation', 'dt_created']

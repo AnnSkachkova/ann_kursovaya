@@ -96,3 +96,13 @@ class ContractorViewSet(RegisteredViewSet):
 @permission_classes([IsAuthenticated])
 def contractor_categories(request):
     return Response(dict(models.Contractor.CONTRACTOR_CATEGORY))
+
+
+class OperationViesSet(viewsets.ModelViewSet):
+    serializer_class = serializers.OperationSerializer
+    pagination_class = CustomPagination
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    filter_backends = [SearchFilter]
+    search_fields = ['username', 'operation']
+    queryset = models.Operation.objects.all()
