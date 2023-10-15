@@ -176,3 +176,55 @@ class DocumentViewSet(RegisteredViewSet):
             queryset = queryset.filter(apply_flag=apply_flag)
 
         return queryset
+
+
+class DocumentItemViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.DocumentItemSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = models.DocumentItem.objects.all()
+        document = self.request.query_params.get('document')
+        if document:
+            queryset = queryset.filter(document=document)
+        return queryset
+
+    def create(self, request, *args, **kwargs):
+        result = viewsets.ModelViewSet.create(self, request, *args, **kwargs)
+        document_id = request.data.get('document')
+        document = models.Document.objects.get(pk=document_id)
+        document_item = models.DocumentItem.objects.get(pk=result.data['id'])
+        models.Operation.objects.create(
+            username=utils.get_username_for_operation(request.user),
+            operation=f'В документ {document} добавлен товар {document_item}'
+        )
+        return result
+
+    def update(self, request, *args, **kwargs):
+        document_item_id = kwargs.get('pk')
+        document_item = models.DocumentItem.objects.filter(pk=document_item_id).first()
+        result = viewsets.ModelViewSet.update(self, request, *args, **kwargs)
+
+        if document_item:
+            count_before = document_item.count
+            count_after = result.data['count']
+            if count_before != count_after:
+                models.Operation.objects.create(
+                    username=utils.get_username_for_operation(request.user),
+                    operation=f'В документе {document_item.document} изменено количество товара {document_item.product.title} '
+                              f'(было {count_before}, стало {count_after})'
+                )
+        return result
+
+    def destroy(self, request, *args, **kwargs):
+        document_item_id = kwargs.get('pk')
+        document_item = models.DocumentItem.objects.filter(pk=document_item_id).first()
+        result = viewsets.ModelViewSet.destroy(self, request, *args, **kwargs)
+
+        if document_item:
+            models.Operation.objects.create(
+                username=utils.get_username_for_operation(request.user),
+                operation=f'Из документа {document_item.document} удален товар {document_item}'
+            )
+        return result

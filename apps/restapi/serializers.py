@@ -24,7 +24,7 @@ class OperationSerializer(serializers.ModelSerializer):
         
 
 class StorageItemSerializer(serializers.ModelSerializer):
-
+    ...
     def to_representation(self, instance):
         result = serializers.ModelSerializer.to_representation(self, instance)
         result['product_title'] = instance.product.title
@@ -37,6 +37,7 @@ class StorageItemSerializer(serializers.ModelSerializer):
         
 
 class DocumentSerializer(serializers.ModelSerializer):
+    ...
     def to_representation(self, instance):
         result = serializers.ModelSerializer.to_representation(self, instance)
         result['contractor_title'] = instance.contractor.title
@@ -44,4 +45,17 @@ class DocumentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Document
+        fields = '__all__'
+        
+
+class DocumentItemSerializer(serializers.ModelSerializer):
+    ...
+    def to_representation(self, instance):
+        result = serializers.ModelSerializer.to_representation(self, instance)
+        result['product_title'] = instance.product.title
+        result['product_price'] = instance.product.price
+        return result
+
+    class Meta:
+        model = models.DocumentItem
         fields = '__all__'
