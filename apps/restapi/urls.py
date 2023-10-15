@@ -8,6 +8,7 @@ app_name = 'api'
 
 urlpatterns = [
     path('contractor_categories/', views.contractor_categories, name='contractor_categories'),
+    path('apply_document/<int:document_id>/', views.apply_document, name='apply_document'),
 ]
 
 

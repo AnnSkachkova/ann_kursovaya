@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import SearchFilter
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
+from rest_framework import status
 
 
 class RegisteredViewSet(viewsets.ModelViewSet):
@@ -228,3 +229,37 @@ class DocumentItemViewSet(viewsets.ModelViewSet):
                 operation=f'Из документа {document_item.document} удален товар {document_item}'
             )
         return result
+    
+    
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def apply_document(request, document_id):
+    document = models.Document.objects.filter(pk=document_id).first()
+    if not document:
+        return Response({'error': f'Документ с номером {document_id} не найден'}, status=status.HTTP_400_BAD_REQUEST)
+    if document.apply_flag:
+        return Response({'error': f'Документ с номером {document_id} уже проведен'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Проведение приходного документа
+    if document.destination_type == models.Document.RECEIPT:
+        utils.apply_receipt_document(document)
+
+    # Проведение расходного документа
+    elif document.destination_type == models.Document.EXPENSE:
+        try:
+            utils.apply_expense_document(document)
+        except Exception as ex:
+            return Response(
+                {'error': f'Невозможно провести документ. Недостаточно товара на складе: {ex}'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    # Если ошибок не возникло - помечаем документ как проведенный и регистрируем операцию
+    document.apply_flag = True
+    document.save()
+    models.Operation.objects.create(
+        username=utils.get_username_for_operation(request.user),
+        operation=f'Документ {document} проведен'
+    )
+    return Response(status=status.HTTP_200_OK)
