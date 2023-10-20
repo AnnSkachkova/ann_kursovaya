@@ -1,9 +1,10 @@
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views.generic import TemplateView, View
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from . import models
 from django.http.response import FileResponse
 from utils import model_to_xls
+from django.shortcuts import redirect
 
 
 class Login(LoginView):
@@ -13,7 +14,9 @@ class Login(LoginView):
         user = self.request.user
         token = self.request.POST['user_token']
         models.Token.objects.update_or_create(user=user, defaults={'token': token})
-        return super(Login, self).get_success_url()
+        return reverse('main:index')
+    
+    
 
 
 class Logout(LogoutView):
