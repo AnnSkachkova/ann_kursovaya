@@ -8,7 +8,7 @@ from django.shortcuts import redirect
 
 
 class Login(LoginView):
-    template_name = 'login.html'
+    template_name = 'falcon/login.html'
     
     def get_success_url(self) -> str:
         user = self.request.user
