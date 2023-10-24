@@ -4,7 +4,6 @@ from django.urls import reverse_lazy, reverse
 from . import models
 from django.http.response import FileResponse
 from utils import model_to_xls
-from django.shortcuts import redirect
 
 
 class Login(LoginView):
