@@ -4,6 +4,7 @@ from django.urls import reverse_lazy, reverse
 from . import models
 from django.http.response import FileResponse
 from utils import model_to_xls
+from django.db.models import Sum, F, Q
 
 
 class Login(LoginView):
@@ -15,15 +16,22 @@ class Login(LoginView):
         models.Token.objects.update_or_create(user=user, defaults={'token': token})
         return reverse('main:index')
     
-    
-
 
 class Logout(LogoutView):
     next_page = reverse_lazy('login')
 
 
 class HomePage(TemplateView):
-    template_name = 'index.html'
+    template_name = 'falcon/index.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super(HomePage, self).get_context_data(**kwargs)
+        context["product_count"] = models.Product.objects.count()
+        context['contractor_count'] = models.Contractor.objects.count()
+        product_count_field = F('count')
+        product_price_field = F('product__price')
+        context["total_cost"] = models.StorageItem.objects.aggregate(tc=Sum(product_count_field * product_price_field))['tc']
+        return context
     
 
 class ProductPage(TemplateView):
