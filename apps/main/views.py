@@ -16,6 +16,7 @@ class Login(LoginView):
         models.Token.objects.update_or_create(user=user, defaults={'token': token})
         return reverse('main:index')
     
+    
 
 class Logout(LogoutView):
     next_page = reverse_lazy('login')
@@ -64,6 +65,9 @@ class ImportProduct(TemplateView):
 
 class ConsolidatedReport(TemplateView):
     template_name = 'consolidated_report.html'
+    
+    
+    
     
     
 class MotionReport(TemplateView):
