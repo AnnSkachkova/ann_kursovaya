@@ -160,17 +160,6 @@
                   <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">Справочник контрагентов</h5>
                 </div>
                 <div class="col-6 col-sm-auto ml-auto text-right pl-0">
-                  <div class="d-none" id="purchases-actions">
-                    <div class="input-group input-group-sm">
-                      <select class="custom-select cus" aria-label="Bulk actions">
-                        <option selected="">Bulk actions</option>
-                        <option value="Refund">Refund</option>
-                        <option value="Delete">Delete</option>
-                        <option value="Archive">Archive</option>
-                      </select>
-                      <button class="btn btn-falcon-default btn-sm ml-2" type="button">Apply</button>
-                    </div>
-                  </div>
                   <div id="dashboard-actions">
                     <button class="btn btn-falcon-default btn-sm" type="button"><span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span><span class="d-none d-sm-inline-block ml-1">Создать</span></button>
                     <button class="btn btn-falcon-default btn-sm" type="button"><span class="fas fa-external-link-alt" data-fa-transform="shrink-3 down-2"></span><span class="d-none d-sm-inline-block ml-1"><a href="{% url 'main:contractors_to_xls' %}">Экспортировать</a></span></button>
@@ -188,33 +177,21 @@
                       <th column-key="category" class="sort pr-1 align-middle">Категория</th>
                       <th column-key="dt_created" class="sort pr-1 align-middle">Дата создания</th>
                       <th column-key="dt_updated" class="sort pr-1 align-middle">Дата изменения</th>
-                      <th column-key="to_remove" class="no-sort pr-1 align-middle data-table-row-action"></th>
+                      <th column-key="to_remove" class="no-sort pr-1 align-middle data-table-row-action">Удалить</th>
                     </tr>
                   </thead>
-                  {% comment %} <tbody id="purchases">
+                  {% for contractor in contractors  %}
+                  <tbody id="purchases">
                     <tr class="btn-reveal-trigger">
-                      <td class="align-middle">
-                        <div class="custom-control custom-checkbox">
-                          <input class="custom-control-input checkbox-bulk-select-target" type="checkbox" id="checkbox-0" />
-                          <label class="custom-control-label" for="checkbox-0"></label>
-                        </div>
-                      </td>
-                      <th class="align-middle"><a href="pages/customer-details.html">Sylvia Plath</a></th>
-                      <td class="align-middle">john@gmail.com</td>
-                      <td class="align-middle">Slick - Drag &amp; Drop Bootstrap Generator</td>
-                      <td class="align-middle">Slick </td>
-                      <td class="align-middle white-space-nowrap">
-                        <div class="dropdown text-sans-serif">
-                          <button class="btn btn-link text-600 btn-sm dropdown-toggle btn-reveal mr-3" type="button" id="dropdown0" data-toggle="dropdown" data-boundary="html" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs--1"></span></button>
-                          <div class="dropdown-menu dropdown-menu-right border py-0" aria-labelledby="dropdown0">
-                            <div class="bg-white py-2"><a class="dropdown-item" href="#!">View</a><a class="dropdown-item" href="#!">Edit</a><a class="dropdown-item" href="#!">Refund</a>
-                              <div class="dropdown-divider"></div><a class="dropdown-item text-warning" href="#!">Archive</a><a class="dropdown-item text-danger" href="#!">Delete</a>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
+                      <th class="align-middle">{{ contractor.id }}</th>
+                      <th class="align-middle"><a href="pages/customer-details.html">{{ contractor.title }}</a></th>
+                      <td class="align-middle">{{ contractor.category }}</td>
+                      <td class="align-middle">{{ contractor.dt_created }}</td>
+                      <td class="align-middle">{{ contractor.dt_updated }}</td>
+                      <td class="align-middle"><a class="dropdown-item text-danger" href="#!">Delete</a></td>
                     </tr>
-                  </tbody> {% endcomment %}
+                  </tbody>
+                  {% endfor %}
                 </table>
               </div>
             </div>
@@ -222,187 +199,6 @@
         </div>
       </div>
     </main>
-  <script>
-    const apiURL = "/api/contractors/";
-
-    const apiContractorCategoriesURL = "/api/contractor_categories/";
-    let contractorCategories = null;
-
-    function checkContractorFormData() {
-        if ($("#contractor-title").val().trim() === "") {
-            throw new Error("Наименование не может быть пустым!")
-        }
-    }
-
-    function showContractors(url) {
-        if (!contractorCategories) {
-            $.ajax(apiContractorCategoriesURL, {
-                "method": "GET",
-                "dataType": "json",
-                "async": false,
-                "success": function (data) {
-                    contractorCategories = data;
-                }
-            })
-        }
-        $.ajax(url, {
-            "method": "GET",
-            "dataType": "json",
-            "success": function (data) {
-                let contractors, nextPage, prevPage;
-                if ("results" in data) {
-                    contractors = data.results;
-                    nextPage = data.next;
-                    prevPage = data.previous;
-                } else {
-                    contractors = [data];
-                    nextPage = prevPage = null;
-                }
-
-                //Создаем таблицу со списком контрагентов
-                let $contentTable = $("#content-table");
-                $("tr:not(:first-child)", $contentTable).remove()
-                let $tableRow = null;
-                for (let contractor of contractors) {
-                    formatDates(contractor);
-                    $tableRow = $("<tr>");
-                    $tableRow.append($("<td class='align-middle'>").text(contractor.id));
-                    $tableRow.append($("<td class='align-middle'>>").text(contractor.title));
-                    $tableRow.append($("<td class='align-middle'>>").text(contractorCategories[contractor.category]));
-                    $tableRow.append($("<td class='align-middle'>>").text(contractor.dt_created));
-                    $tableRow.append($("<td class='align-middle'>>").text(contractor.dt_updated));
-                    $tableRow.append($("<td class='align-middle'>>").text(contractor.to_remove ? "X" : "-"));
-                    $tableRow.data("contractor", contractor);
-                    $contentTable.append($tableRow);
-                }
-                $contentTable.on("click", "tr:not(:first-child)", contractorEdit);
-
-                createPaginationButtons(prevPage, nextPage, showContractors);
-            },
-            "error": function (jqXHR) {
-                showAjaxError(jqXHR, $("#contractor-editor"));
-            }
-        })
-    }
-
-    function contractorEdit() {
-        let selectedContractor = $.data(this, "contractor");
-
-        let $row = $(this);
-
-        showModal($("#contractor-editor"));
-        $("#contractor-number").text(selectedContractor.id);
-        $("#contractor-dt-created").text(selectedContractor.dt_created);
-        $("#contractor-dt-updated").text(selectedContractor.dt_updated);
-        $("#contractor-title").val(selectedContractor.title);
-        let categoriesList = [];
-        for (let [key, value] of Object.entries(contractorCategories)) {
-            categoriesList.push($("<option>").val(key).text(value));
-            if (key === selectedContractor.category) {
-                categoriesList[categoriesList.length - 1].prop("selected", true);
-            }
-        }
-        $("#contractor-category").empty().append(...categoriesList);
-        $("#contractor-to-remove").prop("disabled", false);
-        $("#contractor-to-remove").prop("checked", selectedContractor.to_remove);
-
-        $("#contractor-editor-save-button").off().click(() => {
-            //Проверяем корректность внесения данных в форму
-            try {
-                checkContractorFormData();
-            } catch (error) {
-                alert(error.message);
-                return;
-            }
-
-            let urlForRequest = `${apiURL}${selectedContractor.id}/`;
-            $.ajax(urlForRequest, {
-                "method": "PATCH",
-                "dataType": "json",
-                "data": {
-                    "title": $("#contractor-title").val(),
-                    "category": $("#contractor-category").val(),
-                    "to_remove": $("#contractor-to-remove:checked").val() ? true : false
-                },
-                "success": function (data) {
-                    formatDates(data);
-
-                    $row.empty();
-                    $row.append($("<td>").text(data.id));
-                    $row.append($("<td>").text(data.title));
-                    $row.append($("<td>").text(contractorCategories[data.category]));
-                    $row.append($("<td>").text(data.dt_created));
-                    $row.append($("<td>").text(data.dt_updated));
-                    $row.append($("<td>").text(data.to_remove ? "X" : "-"));
-                    $row.data("contractor", data);
-
-                    closeModal($("#contractor-editor"));
-                },
-                "error": function (jqXHR) {
-                    showAjaxError(jqXHR, $("#contractor-editor"));
-                }
-            })
-        })
-    }
-
-    function contractorCreate() {
-        showModal($("#contractor-editor"));
-
-        $("#contractor-number").text("-");
-        $("#contractor-dt-created").text("-");
-        $("#contractor-dt-updated").text("-");
-        $("#contractor-title").val("");
-        let categoriesList = [];
-        for (let [key, value] of Object.entries(contractorCategories)) {
-            categoriesList.push($("<option>").val(key).text(value));
-        }
-        categoriesList[0].prop("selected", true);
-        $("#contractor-category").empty().append(...categoriesList);
-        $("#contractor-to-remove").prop("disabled", true);
-        $("#contractor-to-remove").prop("checked", false);
-
-        $("#contractor-editor-save-button").off().click(() => {
-            try {
-                checkContractorFormData();
-            } catch (error) {
-                alert(error.message);
-                return
-            }
-
-            $.ajax(apiURL, {
-                "method": "POST",
-                "dataType": "json",
-                "data": {
-                    "title": $("#contractor-title").val(),
-                    "category": $("#contractor-category").val()
-                },
-                "success": function (data) {
-                    closeModal($("#contractor-editor"));
-                    $("#search-field").val(data.id);
-                    showContractors(`${apiURL}${data.id}`);
-                },
-                "error": function (jqXHR) {
-                    showAjaxError(jqXHR, $("#contractor-editor"));
-                }
-            })
-        })
-    }
-
-    let contractorSearch = getSearchFunction(showContractors, getDefaultSearchParams, apiURL);
-
-    let contractorSort = getSortFunction(showContractors, getDefaultSearchParams, apiURL);
-
-    $("#clear-search-field-button").click(() => {
-        $("#search-field").val("");
-        contractorSearch();
-    });
-    $("#create-button").click(contractorCreate);
-    $("#search-button").click(contractorSearch);
-    $("#contractor-editor-close-button, #contractor-editor-cancel-button").click(() => closeModal($("#contractor-editor")));
-    $("#content-table th").click(contractorSort);
-
-    showContractors(apiURL);
-  </script>
     {% endblock main %}
     
 

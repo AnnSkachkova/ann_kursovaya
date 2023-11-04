@@ -1,10 +1,14 @@
+from typing import Any
 from django.contrib.auth.views import LoginView, LogoutView
-from django.views.generic import TemplateView, View
+from django.db import models
+from django.http import HttpRequest, HttpResponse
+from django.views.generic import TemplateView, View, UpdateView
 from django.urls import reverse_lazy, reverse
 from . import models
 from django.http.response import FileResponse
 from utils import model_to_xls
 from django.db.models import Sum, F, Q
+from .forms import ContractorForm
 
 
 class Login(LoginView):
@@ -32,6 +36,7 @@ class HomePage(TemplateView):
         product_count_field = F('count')
         product_price_field = F('product__price')
         context["total_cost"] = models.StorageItem.objects.aggregate(tc=Sum(product_count_field * product_price_field))['tc']
+        context["contractors"] = models.Contractor.objects.all()
         return context
     
 
@@ -41,6 +46,34 @@ class ProductPage(TemplateView):
 
 class ContractorPage(TemplateView):
     template_name = 'contractors.html'
+    
+
+class ContractorUpdate(UpdateView):
+    form_class = ContractorForm
+    model = models.Contractor
+    template_name = ''
+    
+    def post(self, request, *args,**kwargs):
+        if self.request.POST:
+            formset = ContractorForm(self.request.POST)
+            
+            if formset.is_valid():
+                formset.save()
+                
+        return super().post(request, *args, **kwargs)
+    
+    def get_object(self, queryset=None):
+        if self.request.user.is_authenticated:
+            return self.request.user
+        
+    def get_success_url(self) -> str:
+        return reverse()
+    
+    def form_valid(self, form):
+        form.save()
+        return super(ContractorUpdate, self).form_valid(form)
+    
+    
     
 
 class DocumentPage(TemplateView):
