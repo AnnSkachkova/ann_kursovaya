@@ -21,7 +21,7 @@
                     </div>
                   </a>
                   <ul class="nav collapse show" id="home" data-parent="#navbarVerticalCollapse">
-                    <li class="nav-item active"><a class="nav-link" href="index.html">Сводный отчет по базе данных</a>
+                    <li class="nav-item active"><a class="nav-link" href="{% url "main:index" %}">Сводный отчет по базе данных</a>
                     </li>
                     <li class="nav-item"><a class="nav-link" href="home/dashboard-alt.html">Отчет по движениям товаров</a>
                     </li>
@@ -36,7 +36,7 @@
                   <ul class="nav collapse" id="pages" data-parent="#navbarVerticalCollapse">
                     <li class="nav-item"><a class="nav-link" href="{% url "main:products" %}">Товары</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="pages/associations.html">Контрагенты</a>
+                    <li class="nav-item"><a class="nav-link" href="{% url "main:contractors" %}">Контрагенты</a>
                     </li>
                   </ul>
                 </li>
@@ -49,7 +49,7 @@
                     </div>
                   </a>
                   <ul class="nav collapse" id="email" data-parent="#navbarVerticalCollapse">
-                    <li class="nav-item"><a class="nav-link" href="email/inbox.html">Администрирование</a>
+                    <li class="nav-item"><a class="nav-link" href="/admin/">Администрирование</a>
                     </li>
                     <li class="nav-item"><a class="nav-link" href="email/email-detail.html">Удаление помеченных объектов</a>
                     </li>

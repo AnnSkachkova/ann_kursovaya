@@ -20,7 +20,6 @@ class Login(LoginView):
         models.Token.objects.update_or_create(user=user, defaults={'token': token})
         return reverse('main:index')
     
-    
 
 class Logout(LogoutView):
     next_page = reverse_lazy('login')
@@ -44,16 +43,12 @@ class ProductList(ListView):
     template_name = 'falcon/products.html'
     model = models.Product
     paginate_by = 10
-    
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context["products"] = models.Product.objects.all()
-    #     return context
-    
-   
 
-class ContractorPage(TemplateView):
-    template_name = 'contractors.html'
+
+class ContractorList(ListView):
+    template_name = 'falcon/contractors.html'
+    model = models.Contractor
+    paginate_by = 10
     
 
 class ContractorUpdate(UpdateView):
@@ -84,9 +79,11 @@ class ContractorUpdate(UpdateView):
     
     
 
-class DocumentPage(TemplateView):
+class DocumentPage(ListView):
     template_name = 'documents.html'
-    
+    model = models.Document
+    paginate_by = 10
+        
 
 class OperationPage(TemplateView):
     template_name = 'operations.html'
