@@ -2,7 +2,7 @@ from typing import Any
 from django.contrib.auth.views import LoginView, LogoutView
 from django.db import models
 from django.http import HttpRequest, HttpResponse
-from django.views.generic import TemplateView, View, UpdateView
+from django.views.generic import TemplateView, View, UpdateView, ListView
 from django.urls import reverse_lazy, reverse
 from . import models
 from django.http.response import FileResponse
@@ -40,9 +40,17 @@ class HomePage(TemplateView):
         return context
     
 
-class ProductPage(TemplateView):
-    template_name = 'products.html'
+class ProductList(ListView):
+    template_name = 'falcon/products.html'
+    model = models.Product
+    paginate_by = 10
     
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context["products"] = models.Product.objects.all()
+    #     return context
+    
+   
 
 class ContractorPage(TemplateView):
     template_name = 'contractors.html'

@@ -6,7 +6,7 @@ app_name = 'main'
 
 urlpatterns = [
     path('', login_required(views.HomePage.as_view()), name='index'),
-    path('products/', login_required(views.ProductPage.as_view()), name='products'),
+    path('products/', login_required(views.ProductList.as_view()), name='products'),
     path('contractors/', login_required(views.ContractorPage.as_view()), name='contractors'),
     path('documents/', login_required(views.DocumentPage.as_view()), name='documents'),
     path('operations/', login_required(views.OperationPage.as_view()), name='operations'),

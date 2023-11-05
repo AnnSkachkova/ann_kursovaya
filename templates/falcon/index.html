@@ -1,15 +1,13 @@
 {% extends "falcon/base_template.html" %}
 {% load static %}
     {% block main %}
+    <body>
     <main class="main" id="top">
-
       <div class="container" data-layout="container">
         <nav class="navbar navbar-vertical navbar-expand-xl navbar-vibrant">
           <div class="d-flex align-items-center">
             <div class="toggle-icon-wrapper">
-
               <button class="btn navbar-toggler-humburger-icon navbar-vertical-toggle" data-toggle="tooltip" data-placement="left" title="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
-
             </div><a class="navbar-brand" href="index.html">
               <div class="d-flex align-items-center py-3"><span class="text-sans-serif">Log Masters</span>
               </div>
@@ -36,7 +34,7 @@
                     </div>
                   </a>
                   <ul class="nav collapse" id="pages" data-parent="#navbarVerticalCollapse">
-                    <li class="nav-item"><a class="nav-link" href="pages/activity.html">Товары</a>
+                    <li class="nav-item"><a class="nav-link" href="{% url "main:products" %}">Товары</a>
                     </li>
                     <li class="nav-item"><a class="nav-link" href="pages/associations.html">Контрагенты</a>
                     </li>
@@ -73,15 +71,13 @@
             </div>
           </div>
         </nav>
+        {% block content %}
         <div class="content">
           <nav class="navbar navbar-light navbar-glass navbar-top sticky-kit navbar-expand">
-
-            
             <ul class="navbar-nav align-items-center d-none d-lg-block">
               <li class="nav-item">
                 <div class="search-box">
                   <form class="position-relative" data-toggle="search" data-display="static">
-
                     <input class="form-control search-input" type="search" placeholder="Поиск..." aria-label="Поиск" />
                     <span class="fas fa-search search-box-icon"></span>
                   </form>
@@ -128,7 +124,6 @@
             <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
               <div class="bg-holder bg-card" style="background-image:url({% static "assets/img/illustrations/corner-1.png" %});">
               </div>
-
               <div class="card-body position-relative">
                 <h6>Общее количество товаров в справочнике<span class="badge badge-soft-warning rounded-capsule ml-2">-0.23%</span></h6>
                 <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-warning">{{ product_count }}</div><a class="font-weight-semi-bold fs--1 text-nowrap" href="#!">Посмотреть все<span class="fas fa-angle-right ml-1" data-fa-transform="down-1"></span></a>
@@ -137,7 +132,6 @@
             <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
               <div class="bg-holder bg-card" style="background-image:url({% static "assets/img/illustrations/corner-2.png" %});">
               </div>
-
               <div class="card-body position-relative">
                 <h6>Общее количество контрагентов в справочнике<span class="badge badge-soft-info rounded-capsule ml-2">0.0%</span></h6>
                 <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif text-info">{{ contractor_count }}</div><a class="font-weight-semi-bold fs--1 text-nowrap" href="#!">Посмотреть все<span class="fas fa-angle-right ml-1" data-fa-transform="down-1"></span></a>
@@ -146,7 +140,6 @@
             <div class="card mb-3 overflow-hidden" style="min-width: 12rem">
               <div class="bg-holder bg-card" style="background-image:url({% static "assets/img/illustrations/corner-3.png" %});">
               </div>
-
               <div class="card-body position-relative">
                 <h6>Общая стоимость товаров на складе<span class="badge badge-soft-success rounded-capsule ml-2">9.54%</span></h6>
                 <div class="display-4 fs-4 mb-2 font-weight-normal text-sans-serif" data-countup='{"count":{{ total_cost }},"format":"comma","prefix":"BYN "}'>0</div><a class="font-weight-semi-bold fs--1 text-nowrap" href="#!"></a>
@@ -197,9 +190,11 @@
             </div>
           </div>
         </div>
+        {% endblock content %}
       </div>
     </main>
-    {% endblock main %}
+  </body>
+{% endblock main %}
     
 
     
