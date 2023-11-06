@@ -84,8 +84,10 @@ class DocumentList(ListView):
     paginate_by = 10
         
 
-class OperationPage(TemplateView):
-    template_name = 'operations.html'
+class OperationList(ListView):
+    template_name = 'falcon/operations.html'
+    model = models.Operation
+    paginate_by = 10
     
 
 class StorageItemPage(TemplateView):
