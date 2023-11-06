@@ -35,7 +35,7 @@
             <div class="card-header">
               <div class="row align-items-center justify-content-between">
                 <div class="col-6 col-sm-auto d-flex align-items-center pr-0">
-                  <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">Список контрагентов</h5>
+                  <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">Документы</h5>
                 </div>
                 <div class="col-6 col-sm-auto ml-auto text-right pl-0">
                   <div class="d-none" id="purchases-actions">
@@ -50,8 +50,9 @@
                     </div>
                   </div>
                   <div id="dashboard-actions">
-                    <button class="btn btn-falcon-default btn-sm" type="button"><span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span><span class="d-none d-sm-inline-block ml-1">Добавить контрагента</span></button>
-                    <button class="btn btn-falcon-default btn-sm" type="button"><span class="fas fa-external-link-alt" data-fa-transform="shrink-3 down-2"></span><span class="d-none d-sm-inline-block ml-1">Экспортировать</span></button>
+                    <button class="btn btn-falcon-default btn-sm" type="button"><span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span><span class="d-none d-sm-inline-block ml-1">Создать приходной документ</span></button>
+                    <button class="btn btn-falcon-default btn-sm" type="button"><span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span><span class="d-none d-sm-inline-block ml-1">Создать расходный документ</span></button>
+                    {% comment %} <button class="btn btn-falcon-default btn-sm" type="button"><span class="fas fa-external-link-alt" data-fa-transform="shrink-3 down-2"></span><span class="d-none d-sm-inline-block ml-1">Экспортировать</span></button> {% endcomment %}
                   </div>
                 </div>
               </div>
@@ -62,21 +63,23 @@
                   <thead class="bg-200 text-900">
                     <tr>
                       <th class="sort pr-1 align-middle">Номер</th>
-                      <th class="sort pr-1 align-middle">Наименование</th>
-                      <th class="sort pr-1 align-middle">Категория</th>
                       <th class="sort pr-1 align-middle">Дата создания</th>
                       <th class="sort pr-1 align-middle">Дата изменения</th>
+                      <th class="sort pr-1 align-middle">Контрагент</th>
+                      <th class="sort pr-1 align-middle">Тип</th>
+                      <th class="sort pr-1 align-middle">Проведен</th>
                       <th class="no-sort pr-1 align-middle data-table-row-action">Удалить</th>
                     </tr>
                   </thead>
-                  {% for contractor in page_obj %}
+                  {% for document in page_obj %}
                   <tbody id="purchases">
                     <tr class="btn-reveal-trigger">
-                      <td class="align-middle">{{contractor.id}}</td>
-                      <th class="align-middle"><a href="pages/customer-details.html">{{contractor.title}}</a></th>
-                      <td class="align-middle">{{contractor.category}}</td>
-                      <td class="align-middle">{{contractor.dt_created}}</td>
-                      <td class="align-middle">{{contractor.dt_update}}</td>
+                      <td class="align-middle">{{document.id}}</td>
+                      <td class="align-middle">{{document.dt_created}}</td>
+                      <td class="align-middle">{{document.dt_update}}</td>
+                      <td class="align-middle">{{document.contractor}}</td>
+                      <td class="align-middle">{{document.destination_type}}</td>
+                      <td class="align-middle">{{document.apply_flag}}</td>
                       <td class="align-middle"><a class="dropdown-item text-danger" href="#!">Удалить</a></td>
                     </tr>
                   </tbody>

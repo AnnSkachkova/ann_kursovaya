@@ -77,10 +77,9 @@ class ContractorUpdate(UpdateView):
         return super(ContractorUpdate, self).form_valid(form)
     
     
-    
 
-class DocumentPage(ListView):
-    template_name = 'documents.html'
+class DocumentList(ListView):
+    template_name = 'falcon/documents.html'
     model = models.Document
     paginate_by = 10
         
