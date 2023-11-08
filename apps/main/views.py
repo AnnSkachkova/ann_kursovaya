@@ -96,28 +96,21 @@ class StorageItemList(ListView):
     paginate_by = 10
 
 
-class RemoveMarkedObjects(TemplateView):
-    template_name = 'remove_marked_objects.html'
+# class RemoveMarkedObjects(TemplateView):
+#     template_name = 'remove_marked_objects.html'
 
 
 class ImportProduct(TemplateView):
     template_name = 'import_products.html'
     
-
-class ConsolidatedReport(TemplateView):
-    template_name = 'consolidated_report.html'
-    
-    
-    
-    
     
 class MotionReport(TemplateView):
     template_name = 'motion_report.html'
     
-    def get_context_data(self, **kwargs):
-        context = super(MotionReport, self).get_context_data(**kwargs)
-        context["report_type"] = self.request.GET['report_type']
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super(MotionReport, self).get_context_data(**kwargs)
+    #     context["report_type"] = self.request.GET['report_type']
+    #     return context
 
 
 def products_to_xls(request):
