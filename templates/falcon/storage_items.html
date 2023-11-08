@@ -1,0 +1,118 @@
+{% extends "falcon/index.html" %}
+{% load static %}
+{% block content %}
+        <div class="content">
+            <nav class="navbar navbar-light navbar-glass navbar-top sticky-kit navbar-expand">
+                <ul class="navbar-nav align-items-center d-none d-lg-block">
+                  <li class="nav-item">
+                    <div class="search-box">
+                      <form class="position-relative" data-toggle="search" data-display="static">
+                        <input class="form-control search-input" type="search" placeholder="Поиск..." aria-label="Поиск" />
+                        <span class="fas fa-search search-box-icon"></span>
+                      </form>
+                      <button class="close" type="button" data-dismiss="search"><span class="fas fa-times"></span></button>
+                      <div class="dropdown-menu">
+                        <div class="scrollbar perfect-scrollbar py-3" style="height: 24rem;">
+                          <h6 class="dropdown-header px-card pt-0 pb-2">Members</h6>
+                          <a class="dropdown-item px-card py-2" href="pages/profile.html">
+                            <div class="d-flex align-items-center">
+                              <div class="avatar avatar-l mr-2">
+                                <img class="rounded-circle" src="{% static "assets/img/team/3.jpg" %}" alt="" />
+                              </div>
+                              <div class="flex-1">
+                                <h6 class="mb-0">Emma Watson</h6>
+                                <p class="fs--2 mb-0">Google</p>
+                              </div>
+                            </div>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </nav>
+          <div class="card mb-3">
+            <div class="card-header">
+              <div class="row align-items-center justify-content-between">
+                <div class="col-6 col-sm-auto d-flex align-items-center pr-0">
+                  <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">Документы</h5>
+                </div>
+                <div class="col-6 col-sm-auto ml-auto text-right pl-0">
+                  <div class="d-none" id="purchases-actions">
+                    <div class="input-group input-group-sm">
+                      <select class="custom-select cus" aria-label="Bulk actions">
+                        <option selected="">Bulk actions</option>
+                        <option value="Refund">Refund</option>
+                        <option value="Delete">Delete</option>
+                        <option value="Archive">Archive</option>
+                      </select>
+                      <button class="btn btn-falcon-default btn-sm ml-2" type="button">Apply</button>
+                    </div>
+                  </div>
+                  <div id="dashboard-actions">
+                    <button class="btn btn-falcon-default btn-sm" type="button"><span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span><span class="d-none d-sm-inline-block ml-1">Создать приходной документ</span></button>
+                    <button class="btn btn-falcon-default btn-sm" type="button"><span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span><span class="d-none d-sm-inline-block ml-1">Создать расходный документ</span></button>
+                    {% comment %} <button class="btn btn-falcon-default btn-sm" type="button"><span class="fas fa-external-link-alt" data-fa-transform="shrink-3 down-2"></span><span class="d-none d-sm-inline-block ml-1">Экспортировать</span></button> {% endcomment %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-body px-0 pt-0">
+              <div class="dashboard-data-table">
+                <table class="table table-sm table-dashboard fs--1 data-table border-bottom" data-options='{"responsive":false,"pagingType":"simple","lengthChange":false,"searching":false,"pageLength":8,"columnDefs":[{"targets":[0,6],"orderable":false}]}'>
+                  <thead class="bg-200 text-900">
+                    <tr>
+                      <th class="sort pr-1 align-middle">Номер</th>
+                      <th class="sort pr-1 align-middle">Дата создания</th>
+                      <th class="sort pr-1 align-middle">Дата изменения</th>
+                      <th class="sort pr-1 align-middle">Контрагент</th>
+                      <th class="sort pr-1 align-middle">Тип</th>
+                      <th class="sort pr-1 align-middle">Проведен</th>
+                      <th class="no-sort pr-1 align-middle data-table-row-action">Удалить</th>
+                    </tr>
+                  </thead>
+                  {% for document in page_obj %}
+                  <tbody id="purchases">
+                    <tr class="btn-reveal-trigger">
+                      <td class="align-middle">{{document.id}}</td>
+                      <td class="align-middle">{{document.dt_created}}</td>
+                      <td class="align-middle">{{document.dt_update}}</td>
+                      <td class="align-middle">{{document.contractor}}</td>
+                      <td class="align-middle">{{document.destination_type}}</td>
+                      <td class="align-middle">{{document.apply_flag}}</td>
+                      <td class="align-middle"><a class="dropdown-item text-danger" href="#!">Удалить</a></td>
+                    </tr>
+                  </tbody>
+                  {% endfor %}
+                </table>
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination pagination-sm justify-content-center">
+                    {% if page_obj.has_previous %}
+                      <li class="page-item">
+                        <a class="page-link bg-primary text-white" href="?page=1">Начало</a>
+                    </li>
+                      <li class="page-item">
+                        <a class="page-link bg-primary text-white" href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+                    </li>
+                    {% endif%}
+                      <li class="page-item active">
+                        <a class="page-link bg-primary text-white" href="#">{{page_obj.number}}</a>
+                    </li>
+                      <li class="page-item">
+                        <a class="page-link bg-primary text-white" href="#">{{ page_obj.paginator.num_pages }}</a>
+                    </li>
+                    {% if page_obj.has_next %}
+                      <li class="page-item">
+                        <a class="page-link bg-primary text-white" href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+                    </li>
+                      <li class="page-item">
+                        <a class="page-link bg-primary text-white" href="?page={{ page_obj.paginator.num_pages }}">Конец</a>
+                    </li>
+                    {% endif %}
+                    </ul>
+                  </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+{% endblock content %}

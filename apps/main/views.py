@@ -90,8 +90,10 @@ class OperationList(ListView):
     paginate_by = 10
     
 
-class StorageItemPage(TemplateView):
-    template_name = 'storage_items.html'
+class StorageItemList(ListView):
+    template_name = 'falcon/storage_items.html'
+    model = models.StorageItem
+    paginate_by = 10
 
 
 class RemoveMarkedObjects(TemplateView):
