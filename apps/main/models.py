@@ -13,6 +13,20 @@ class Token(models.Model):
         verbose_name = 'Токен пользователя'
         verbose_name_plural = 'Токенты пользователей'
         
+
+
+class Company(models.Model):
+    name = models.CharField(max_length=200, verbose_name='Наименование компании')
+    address = models.TextField(verbose_name='Адрес компании', null=True, blank=True, default='')
+
+    def __str__(self):
+        return f'{self.name}'
+
+    class Meta:
+        verbose_name = 'Логистическая компания'
+        verbose_name_plural = 'Логистические компании'
+        ordering = ['name']
+
         
 class BaseDateModel(models.Model):
     dt_created = models.DateTimeField(verbose_name='Дата и время создания', auto_now_add=True)
@@ -27,6 +41,8 @@ class Product(BaseDateModel):
     title = models.CharField(max_length=200, verbose_name='Наименование')
     description = models.TextField(verbose_name='Описание', null=True, blank=True, default='')
     price = models.IntegerField(verbose_name='Цена')
+    photo = models.ImageField(upload_to='product_photos/', null=True, blank=True, verbose_name='Фото товара')
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, verbose_name='Логистическая компания', related_name='products', default=1)
 
     def __str__(self):
         return '{number:<10}|{title}'.format(number=self.pk, title=self.title)

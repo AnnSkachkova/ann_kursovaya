@@ -10,8 +10,8 @@ class TokenAdmin(admin.ModelAdmin):
     
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'description', 'price', 'dt_created', 'dt_updated', 'to_remove']
-    list_display_links = ['title', 'description', 'price']
+    list_display = ['id', 'title', 'description', 'price', 'photo', 'dt_created', 'dt_updated', 'to_remove']
+    list_display_links = ['title', 'description', 'price', 'photo']
     
 
 @admin.register(models.Contractor)
