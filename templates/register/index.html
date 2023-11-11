@@ -1,0 +1,119 @@
+{% comment %} {% extends "falcon/base_template.html" %} {% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company and User Registration</title>
+</head>
+<body>
+
+<!-- Форма регистрации компании -->
+<form id="company-registration-form">
+    {% csrf_token %}
+    <label for="company-name">Company Name:</label>
+    <input type="text" id="company-name" name="company_name" required>
+    <br>
+    <label for="company-address">Company Address:</label>
+    <textarea id="company-address" name="company_address" required></textarea>
+    <br>
+    <button type="button" id="submit-company">Register Company</button>
+</form>
+
+<!-- Форма регистрации пользователя -->
+<form id="user-registration-form" style="display: none;">
+    {% csrf_token %}
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+    <br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+    <br>
+    <button type="button" id="submit-user">Register User</button>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+{% comment %} <script src="{% static 'your_app/ajax_registration.js' %}"></script> {% endcomment %}
+
+<script>
+    $(document).ready(function () {
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Ищем куку с именем, начинающимся с csrftoken=
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                    // Только отправляем токен, если запрос на тот же домен
+                    xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+                }
+            }
+        });
+        
+        // Обработчик события для отправки данных компании
+        $("#submit-company").click(function () {
+            var companyData = {
+                name: $("#company-name").val(),
+                address: $("#company-address").val()
+            };
+        
+            $.ajax({
+                type: "POST",
+                url: "/api/register/company/",
+                data: JSON.stringify(companyData),
+                contentType: "application/json",
+                success: function (data) {
+                    // Успешная регистрация компании
+                    $("#company-registration-form").hide();
+                    $("#user-registration-form").show();
+                },
+                error: function (xhr, status, error) {
+                    // Обработка ошибок с выводом дополнительной информации
+                    console.error("Error registering company - Status:", status, "Error:", error);
+                    console.log("Response Text:", xhr.responseText);
+                }
+            });
+        });
+    
+        // Обработчик события для отправки данных пользователя
+        $("#submit-user").click(function () {
+            var userData = {
+                username: $("#username").val(),
+                password: $("#password").val()
+            };
+    
+            $.ajax({
+                type: "POST",
+                url: "/api/register/user/",
+                data: JSON.stringify(userData),
+                contentType: "application/json",
+                success: function (data) {
+                    // Успешная регистрация пользователя
+                    console.log("User registered successfully:", data);
+                },
+                error: function (error) {
+                    // Обработка ошибок
+                    console.error("Error registering user:", error);
+                }
+            });
+        });
+    });
+    
+</script>
+
+</body>
+</html>

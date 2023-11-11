@@ -14,7 +14,6 @@ class Token(models.Model):
         verbose_name_plural = 'Токенты пользователей'
         
 
-
 class Company(models.Model):
     name = models.CharField(max_length=200, verbose_name='Наименование компании')
     address = models.TextField(verbose_name='Адрес компании', null=True, blank=True, default='')
@@ -26,6 +25,14 @@ class Company(models.Model):
         verbose_name = 'Логистическая компания'
         verbose_name_plural = 'Логистические компании'
         ordering = ['name']
+        
+        
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, verbose_name='Логистическая компания', related_name='users')
+
+    def __str__(self):
+        return f'{self.user.username} - {self.company.name}'
 
         
 class BaseDateModel(models.Model):
